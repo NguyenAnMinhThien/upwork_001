@@ -39,13 +39,6 @@ def extract_page(data):
 
              })
         dftemps = pandas.concat([dftemp, dftemps], ignore_index=False)
-        # flatten = list()
-            # for subdata in rows:
-            #     flatten = flatten + subdata
-            #
-            # create the dic from flatten data
-            # dftemp = pandas.DataFrame(
-            #     {"Legal Business Name": [flatten[flatten.index("Legal Business Name:") + 1]], "Referenced IDV": [flatten[flatten.index("Referenced IDV:") + 1]], "Unique Entity ID": [flatten[flatten.index("Unique Entity ID:") + 1]], "Action Obligation": [flatten[flatten.index("Action Obligation:") + 1]]})
     except Exception as e:
         print(e)
         pass
