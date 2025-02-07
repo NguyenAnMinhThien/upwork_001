@@ -18,9 +18,7 @@ def devide_part(start,stop):
 
 if __name__ == '__main__':
     # total_result, member_urls = driver.get_member_urls()
-    # Run 1500 results
-    jump = [0,2,4,6,8,10,12]
-    for i in range(0,6):
-        devide_part(jump[i], jump[i] + 2)
+    for i in range(0,3):
+        devide_part(i,i+1)
 
 
