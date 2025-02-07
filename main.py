@@ -19,9 +19,8 @@ def devide_part(start,stop):
 
 if __name__ == '__main__':
     # total_result, member_urls = driver.get_member_urls()
-    for i in range(0,50):
-        devide_part(i,i + 1)
-        time.sleep(1)
+        devide_part(0,3)
+        
 
 
 
