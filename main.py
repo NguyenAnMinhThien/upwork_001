@@ -4,7 +4,6 @@ import asyncio
 import get_view
 import utils
 import os
-import driver
 import datetime
 import multiprocessing
 
