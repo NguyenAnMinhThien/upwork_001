@@ -1,5 +1,4 @@
 import time
-import hehe
 import os
 import pandas
 import aiohttp
@@ -53,9 +52,6 @@ def extract_page(data):
     finally:
         return dftemps
 
-haha = hehe.data
-mydata = extract_page(haha)
-mydata.to_csv("haha.csv")
 
 async def fetch_url(url):
     global member_urls
