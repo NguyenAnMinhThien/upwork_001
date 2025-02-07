@@ -12,7 +12,7 @@ async def fetch_url(url):
                 data = await response.text()
                 soup = BeautifulSoup(data, features="html.parser")
                 links = soup.find_all('a', title="View")
-                member_urls.extend([link.get('href') for link in links])
+                member_urls.extend(["https://www.fpds.gov" + link.get('href').strip("javascript:getParentURL('").strip("')") for link in links])
             else:
                 print(f"Error fetching {url}: {response.status}")
 

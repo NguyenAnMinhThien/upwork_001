@@ -14,7 +14,7 @@ if __name__ == '__main__':
     start = 0
     stop = 10
     hehe = (datetime.datetime.now())
-    member_urls = get_view.scrape_view_link(range(0,3))
+    member_urls = get_view.scrape_view_link(range(0,2))
     filename, filepath = utils.get_file_name(start,stop)
     utils.fetch_and_parse(urls=member_urls)
     utils.dftemps.to_csv(filepath)
