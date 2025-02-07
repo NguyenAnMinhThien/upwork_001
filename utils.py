@@ -1,4 +1,5 @@
 import time
+import hehe
 import os
 import pandas
 import aiohttp
@@ -23,6 +24,7 @@ def extract_page(data):
         soup = BeautifulSoup(data, features="html.parser")
         tables = soup.find_all('table')
         part1 = get_table(tables[7])
+        inputs = tables[9].find_all("input")
         dftemp = pandas.DataFrame(
             {"Award Type": [part1[0][1]],
              "Prepared Date": [part1[0][4]],
@@ -35,6 +37,7 @@ def extract_page(data):
              "Close By": [part1[4][7]],
              "Approved Date": [part1[6][4]],
              "Approved By": [part1[6][7]],
+
              })
         dftemps = pandas.concat([dftemp, dftemps], ignore_index=False)
         # flatten = list()
@@ -49,6 +52,10 @@ def extract_page(data):
         pass
     finally:
         return dftemps
+
+haha = hehe.data
+mydata = extract_page(haha)
+mydata.to_csv("haha.csv")
 
 async def fetch_url(url):
     global member_urls
