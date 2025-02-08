@@ -1,11 +1,18 @@
 import time
 import os
+import proxy_list
 import pandas
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 
 member_urls = list()
+error_urls = list()
+count = 0
+# proxy_url = proxy_list.proxy_list2[1]
+proxy_url = 'http://qaibfgfd:wdquza3u1uoh@198.23.239.134:6540'
+proxy_urls = ['http://106.58.218.165:8008', 'socks4://91.147.235.99:4145']
+
 
 
 def get_table(table):
@@ -18,7 +25,7 @@ def get_table(table):
 dftemps = pandas.DataFrame()
 
 
-def extract_page(data):
+def extract_page(data, url):
     global dftemps
     dftemp = pandas.DataFrame()
     try:
@@ -123,26 +130,39 @@ def extract_page(data):
             })
         dftemps = pandas.concat([dftemp, dftemps], ignore_index=False)
     except Exception as e:
-        print(e)
+        print("The request is interrupted.")
+        error_urls.extend(url)
         pass
     finally:
         return dftemps
 
+def record_interrupted_request(error_requests):
+    pandas.DataFrame(error_requests).to_csv("interrupted_urls.csv", index=False, mode='a', header=False)
+    error_requests.clear()
 
-
-semaphore = asyncio.Semaphore(10)
+# semaphore = asyncio.Semaphore(50)
 async def fetch_url(url):
+    connector = aiohttp.TCPConnector(limit=30)
     global member_urls
-    async with semaphore:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    data = await response.text()
-                    # this is the part will be change
-                    extract_page(data)
-                    #
-                else:
-                    print(f"Error fetching {url}: {response.status}")
+    global proxy_urls
+    global proxy_url
+    global count
+    try:
+        # async with semaphore:
+            async with aiohttp.ClientSession(connector = connector) as session:
+                async with session.get(url, proxy=proxy_url) as response:
+                    if response.status == 200:
+                        data = await response.text()
+                        # this is the part will be change
+                        extract_page(data, url)
+                        #
+                    else:
+                        print(f"Error fetching {url}: {response.status}")
+    except Exception as e:
+        print(e)
+        # count = count + 1
+        # proxy_url = proxy_list.proxy_list2[count]
+        pass
 
 
 async def main(urls):
@@ -163,3 +183,9 @@ def get_file_name(start, stop):
         # other
         filepath = os.getcwd() + "/output/" + filename
     return filename, filepath
+
+
+
+#
+# def create_proxy_http(item):
+#    return proxy_urls
