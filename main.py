@@ -2,6 +2,9 @@ import sys
 import time
 import concurrent.futures
 import asyncio
+
+import pandas as pd
+
 import get_view
 import utils
 import os
@@ -19,10 +22,15 @@ def devide_part(start,stop):
 
 if __name__ == '__main__':
     # total_result, member_urls = driver.get_member_urls()
-    for i in range(0,50):
-        devide_part(i,i + 1)
-        time.sleep(1)
-
+    # for i in range(0,50):
+        devide_part(0,1)
+        get_view.member_urls.clear()
+        utils.dftemps = pd.DataFrame()
+        devide_part(1,2)
+        get_view.member_urls.clear()
+        utils.dftemps = pd.DataFrame()
+        # time.sleep(1)
+# modify
 
 
 
