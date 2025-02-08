@@ -5,15 +5,31 @@ import pandas
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
+import random
 
 member_urls = list()
 error_urls = list()
 count = 0
 # proxy_url = proxy_list.proxy_list2[1]
-proxy_url = 'http://qaibfgfd:wdquza3u1uoh@198.23.239.134:6540'
-proxy_urls = ['http://106.58.218.165:8008', 'socks4://91.147.235.99:4145']
+# proxy_url = 'http://qaibfgfd:wdquza3u1uoh@198.23.239.134:6540'
+# proxy_urls = ['http://106.58.218.165:8008', 'socks4://91.147.235.99:4145']
 
+def rotate_proxy():
+    proxy_list = [
 
+        'http://156.228.106.103:3128',
+        'http://156.228.99.125:3128',
+        'http://156.228.80.154:3128',
+        'http://156.228.97.169:3128',
+        'http://154.94.14.136:3128',
+        'http://154.213.194.86:3128',
+        'http://156.253.164.47:3128',
+        'http://156.228.100.4:3128',
+        'http://156.233.73.158:3128',
+        'http://156.228.78.24:3128',
+
+    ]
+    return random.choice(proxy_list)
 
 def get_table(table):
     rows = []
@@ -144,12 +160,13 @@ def record_interrupted_request(error_requests):
 async def fetch_url(url):
     connector = aiohttp.TCPConnector(limit=30)
     global member_urls
-    global proxy_urls
-    global proxy_url
-    global count
+    # global proxy_urls
+    # global proxy_url
+    # global count
     try:
         # async with semaphore:
             async with aiohttp.ClientSession(connector = connector) as session:
+                proxy_url = rotate_proxy()
                 async with session.get(url, proxy=proxy_url) as response:
                     if response.status == 200:
                         data = await response.text()
