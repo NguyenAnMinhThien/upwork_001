@@ -1,7 +1,6 @@
 import time
 import os
 import pandas
-import hehe
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
@@ -130,8 +129,6 @@ def extract_page(data):
         return dftemps
 
 
-mydata= extract_page(hehe.data)
-mydata.to_csv('mydata.csv')
 
 
 async def fetch_url(url):
