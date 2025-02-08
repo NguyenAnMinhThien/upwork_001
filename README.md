@@ -15,6 +15,10 @@ cd web_scraping
 python -m venv venv
 
 source venv/Scripts/activate
+OR
+source venv/bin/activate
+
+pip install -r requirement.txt
 
 python main.py
 
