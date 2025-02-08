@@ -130,18 +130,19 @@ def extract_page(data):
 
 
 
-
+semaphore = asyncio.Semaphore(10)
 async def fetch_url(url):
     global member_urls
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if response.status == 200:
-                data = await response.text()
-                # this is the part will be change
-                extract_page(data)
-                #
-            else:
-                print(f"Error fetching {url}: {response.status}")
+    async with semaphore:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.text()
+                    # this is the part will be change
+                    extract_page(data)
+                    #
+                else:
+                    print(f"Error fetching {url}: {response.status}")
 
 
 async def main(urls):
