@@ -46,10 +46,11 @@ if __name__ == '__main__':
     number_pages = welcome()
     continue_or_not = input("Continue? (y/n): ")
     if continue_or_not.lower() == "y":
-        start = round(int(latest_file.split("-")[2].strip(".csv"))/round(number_pages/30))
+        start = round(int(latest_file.split("-")[2].strip(".csv"))/number_pages)
     else:
         start = 0
-    for i in range(start, 330000 ):
+    #     The number of pages each file should contain.
+    for i in range(start, round(10000000/number_pages)):
         devide_part(round(number_pages/30)*i, round(number_pages/30)*(i+1))
         get_view.member_urls.clear()
         utils.dftemps = pd.DataFrame()

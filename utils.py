@@ -5,6 +5,7 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 import random
+import proxy_list
 import proxyscrape
 
 member_urls = list()
@@ -16,7 +17,7 @@ dftemps = pandas.DataFrame()
 # 14.173.75.31
 
 def rotate_proxy():
-    proxy = proxyscrape.proxy
+    proxy = proxy_list.proxy
     return random.choice(proxy)
 
 
