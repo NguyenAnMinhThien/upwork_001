@@ -5,40 +5,26 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 import random
-# 54.255.135.139
-# 14.173.75.31
+import proxyscrape
+
 member_urls = list()
 error_urls = list()
-count = 0
-# proxy_url = proxy_list.proxy_list2[1]
-# proxy_url = 'http://qaibfgfd:wdquza3u1uoh@198.23.239.134:6540'
-# proxy_urls = ['http://106.58.218.165:8008', 'socks4://91.147.235.99:4145']
+dftemps = pandas.DataFrame()
+
+
+# 54.255.135.139
+# 14.173.75.31
 
 def rotate_proxy():
-    proxy_list = [
-'',
-        # 'http://156.228.106.103:3128',
-        # 'http://156.228.99.125:3128',
-        # 'http://156.228.80.154:3128',
-        # 'http://156.228.97.169:3128',
-        # 'http://154.94.14.136:3128',
-        # 'http://154.213.194.86:3128',
-        # 'http://156.253.164.47:3128',
-        # 'http://156.228.100.4:3128',
-        # 'http://156.233.73.158:3128',
-        # 'http://156.228.78.24:3128',
+    proxy = proxyscrape.proxy
+    return random.choice(proxy)
 
-    ]
-    return random.choice(proxy_list)
 
 def get_table(table):
     rows = []
     for i, row in enumerate(table.find_all('tr')):
         rows.append([el.text.strip("\n").strip("\t") for el in row.find_all('td')])
     return rows
-
-
-dftemps = pandas.DataFrame()
 
 
 def extract_page(data):
@@ -115,12 +101,15 @@ def extract_page(data):
                 "Phone": [f' {inputs4[12].get("value")}'],
                 "Fax No": [f' {inputs4[13].get("value")}'],
                 "Congressional District": [f' {inputs4[14].get("value")}'],
+
                 # inputs5 - table37
                 "Organization Type": [f' {inputs5[0].get("value")}'],
                 "State of Incorporation": [f' {inputs5[1].get("value")}'],
                 "Country of Incorporation": [f' {inputs5[2].get("value")}'],
+
                 # inputs7 - table 81
                 "Number of Actions": [f' {inputs7[1].get("value")}'],
+
                 # inputs6 - table4
                 "Principal Place of Performance Code": [
                     f' State-{inputs6[242].get("value")}, Location-{inputs6[243].get("value")}, Country-{inputs6[244].get("value")}'],
@@ -128,6 +117,7 @@ def extract_page(data):
                 "Principal Place of Performance City Name": [f' {inputs6[247].get("value")}'],
                 "Congressional District Place of Performance": [f' {inputs6[248].get("value")}'],
                 "Place of Performance Zip Code(+4)": [f' {inputs6[249].get("value")}'],
+
                 # inputs6 - table4 also
                 "Product/Service Code": [f' {inputs6[252].get("value")}, Description-{inputs6[254].get("value")}'],
                 "Principal NAICS Code": [f' {inputs6[255].get("value")}, Description-{inputs6[257].get("value")}'],
@@ -142,48 +132,40 @@ def extract_page(data):
                 "Number of Offers Source": [f' {inputs6[273].get("value")}'],
                 # inputs6-table4 also
                 "Price Evaluation Percent Difference": [f' {inputs6[275].get("value")}'],
-
             })
         dftemps = pandas.concat([dftemp, dftemps], ignore_index=False)
     except Exception as e:
         print("The request is interrupted.")
-        print(data)
         pass
     finally:
         return dftemps
+
 
 def record_interrupted_request(error_requests):
     pandas.DataFrame(error_requests).to_csv("interrupted_urls.csv", index=False, mode='a', header=False)
     error_requests.clear()
 
-# semaphore = asyncio.Semaphore(50)
+
 async def fetch_url(url):
-    # connector = aiohttp.TCPConnector(limit=30)
     global member_urls
-    # global proxy_urls
-    # global proxy_url
-    # global count
     try:
-        # async with semaphore:
-            async with aiohttp.ClientSession() as session:
-                proxy_url = rotate_proxy()
-                async with session.get(url, proxy=proxy_url) as response:
-                    if response.status == 200:
-                        data = await response.text()
-                        # this is the part will be change
-                        loop = asyncio.get_event_loop()
-                        if data.__len__() > 2000:
-                            await loop.run_in_executor(None,extract_page, data)
-                        else:
-                            print(f"{url} failed")
-                            error_urls.append(url)
+        async with aiohttp.ClientSession() as session:
+            proxy_url = rotate_proxy()
+            async with session.get(url, proxy=proxy_url) as response:
+                if response.status == 200:
+                    data = await response.text()
+                    # this is the part will be change
+                    loop = asyncio.get_event_loop()
+                    if data.__len__() > 2000:
+                        await loop.run_in_executor(None, extract_page, data)
                     else:
-                        print(f"Error fetching {url}: {response.status}")
+                        print(f"{url} failed")
+                        error_urls.append(url)
+                else:
+                    print(f"Error fetching {url}: {response.status}")
     except Exception as e:
         print(e)
         error_urls.append(url)
-        # count = count + 1
-        # proxy_url = proxy_list.proxy_list2[count]
         pass
 
 
@@ -197,7 +179,6 @@ def fetch_and_parse(urls):
     asyncio.run(main(urls))
 
 
-
 def get_file_name(start, stop):
     filename = f"output-{start * 30}-{stop * 30}.csv"
     if os.name == "nt":
@@ -207,9 +188,3 @@ def get_file_name(start, stop):
         # other
         filepath = os.getcwd() + "/output/" + filename
     return filename, filepath
-
-
-
-#
-# def create_proxy_http(item):
-#    return proxy_urls
