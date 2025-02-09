@@ -1,12 +1,12 @@
 import time
 import os
-import proxy_list
 import pandas
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 import random
-
+# 54.255.135.139
+# 14.173.75.31
 member_urls = list()
 error_urls = list()
 count = 0
@@ -41,7 +41,7 @@ def get_table(table):
 dftemps = pandas.DataFrame()
 
 
-def extract_page(data, url):
+def extract_page(data):
     global dftemps
     dftemp = pandas.DataFrame()
     try:
@@ -147,7 +147,7 @@ def extract_page(data, url):
         dftemps = pandas.concat([dftemp, dftemps], ignore_index=False)
     except Exception as e:
         print("The request is interrupted.")
-        error_urls.extend(url)
+        print(data)
         pass
     finally:
         return dftemps
@@ -171,12 +171,16 @@ async def fetch_url(url):
                     if response.status == 200:
                         data = await response.text()
                         # this is the part will be change
-                        extract_page(data, url)
-                        #
+                        if data.__len__() > 2000:
+                            extract_page(data)
+                        else:
+                            print(f"{url} failed")
+                            error_urls.append(url)
                     else:
                         print(f"Error fetching {url}: {response.status}")
     except Exception as e:
         print(e)
+        error_urls.append(url)
         # count = count + 1
         # proxy_url = proxy_list.proxy_list2[count]
         pass
@@ -188,7 +192,9 @@ async def main(urls):
 
 
 def fetch_and_parse(urls):
+    error_urls.clear()
     asyncio.run(main(urls))
+
 
 
 def get_file_name(start, stop):

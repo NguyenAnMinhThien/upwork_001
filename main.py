@@ -16,18 +16,23 @@ def devide_part(start,stop):
     member_urls = get_view.scrape_view_link(range(start, stop))
     filename, filepath = utils.get_file_name(start, stop)
     utils.fetch_and_parse(urls=member_urls)
+    # Clear error list before run again
+
+    while (utils.error_urls != []):
+        error_urls_again = utils.error_urls.copy()
+        utils.fetch_and_parse(urls=error_urls_again)
     utils.dftemps.to_csv(filepath)
     end = (datetime.datetime.now()) - start_time
     print(f"Time taken: {end} - Output file at: {filepath}")
 
 if __name__ == '__main__':
     # total_result, member_urls = driver.get_member_urls()
-    for i in range(0,3):
+    for i in range(0,1):
         devide_part(i,i + 1)
         get_view.member_urls.clear()
         utils.dftemps = pd.DataFrame()
         #     Every 900 URLs, we rerun again the old fail urls
-    utils.record_interrupted_request(utils.error_urls)
+    # utils.record_interrupted_request(utils.error_urls)
 # modify
 
 
