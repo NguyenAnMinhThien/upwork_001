@@ -59,14 +59,14 @@ if __name__ == '__main__':
 
     number_pages = int(args.pages)
     con = args.con
-    if args.start != "None":
+    if args.start != None:
         start = int(args.start)
-    if args.end != "None":
+    if args.end != None:
         end = int(args.end)
     utils.proxy_apply = args.proxy
 
     # Define the start and end in a range if we decide to run with proxy and scrape all data.
-    if args.start == "None" and args.end == "None":
+    if args.start == None and args.end == None:
         if con.lower() == "yes":
             latest_file = latest_file()
             start = round(int(latest_file.split("-")[2].strip(".csv"))/number_pages)

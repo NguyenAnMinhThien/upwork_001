@@ -6,7 +6,6 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 import random
-import proxy_list
 import proxyscrape
 
 member_urls = list()
@@ -20,7 +19,7 @@ proxy_apply = ""
 
 def rotate_proxy():
     if proxy_apply == "yes":
-        proxy = proxy_list.proxy
+        proxy = proxyscrape.proxy
     else:
         proxy = ['']
     return random.choice(proxy)
@@ -165,12 +164,12 @@ async def fetch_url(url):
                     if data.__len__() > 2000:
                         await loop.run_in_executor(None, extract_page, data)
                     else:
-                        print(f"{url} failed")
+                        # print(f"{url} failed")
                         error_urls.append(url)
                 else:
                     print(f"Error fetching {url}: {response.status}")
     except Exception as e:
-        print(e)
+        # print(e)
         error_urls.append(url)
         pass
 
