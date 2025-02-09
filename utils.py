@@ -16,17 +16,17 @@ count = 0
 
 def rotate_proxy():
     proxy_list = [
-
-        'http://156.228.106.103:3128',
-        'http://156.228.99.125:3128',
-        'http://156.228.80.154:3128',
-        'http://156.228.97.169:3128',
-        'http://154.94.14.136:3128',
-        'http://154.213.194.86:3128',
-        'http://156.253.164.47:3128',
-        'http://156.228.100.4:3128',
-        'http://156.233.73.158:3128',
-        'http://156.228.78.24:3128',
+'',
+        # 'http://156.228.106.103:3128',
+        # 'http://156.228.99.125:3128',
+        # 'http://156.228.80.154:3128',
+        # 'http://156.228.97.169:3128',
+        # 'http://154.94.14.136:3128',
+        # 'http://154.213.194.86:3128',
+        # 'http://156.253.164.47:3128',
+        # 'http://156.228.100.4:3128',
+        # 'http://156.233.73.158:3128',
+        # 'http://156.228.78.24:3128',
 
     ]
     return random.choice(proxy_list)
@@ -158,21 +158,22 @@ def record_interrupted_request(error_requests):
 
 # semaphore = asyncio.Semaphore(50)
 async def fetch_url(url):
-    connector = aiohttp.TCPConnector(limit=30)
+    # connector = aiohttp.TCPConnector(limit=30)
     global member_urls
     # global proxy_urls
     # global proxy_url
     # global count
     try:
         # async with semaphore:
-            async with aiohttp.ClientSession(connector = connector) as session:
+            async with aiohttp.ClientSession() as session:
                 proxy_url = rotate_proxy()
                 async with session.get(url, proxy=proxy_url) as response:
                     if response.status == 200:
                         data = await response.text()
                         # this is the part will be change
+                        loop = asyncio.get_event_loop()
                         if data.__len__() > 2000:
-                            extract_page(data)
+                            await loop.run_in_executor(None,extract_page, data)
                         else:
                             print(f"{url} failed")
                             error_urls.append(url)
