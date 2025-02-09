@@ -5,6 +5,12 @@ import utils
 import os
 import datetime
 import multiprocessing
+import argparse
+
+
+# usage python main.py -con yes -pages 300   -proxy yes  // This is used for scrape with proxy servers list.
+# usage python main.py  -pages 30 -start 0 -end 2 -proxy no  //This is used for scrape with a range of pages only.
+
 def latest_file():
     if os.name == "nt":
         # window
@@ -42,15 +48,35 @@ def devide_part(start, stop):
 
 
 if __name__ == '__main__':
-    latest_file = latest_file()
-    number_pages = welcome()
-    continue_or_not = input("Continue? (y/n): ")
-    if continue_or_not.lower() == "y":
-        start = round(int(latest_file.split("-")[2].strip(".csv"))/number_pages)
-    else:
-        start = 0
+
+    parser = argparse.ArgumentParser(description="Web scraping")
+    parser.add_argument("-con", help="Continue the job or not", required=False)
+    parser.add_argument("-pages", help="Total pages each CSV file.", required=True)
+    parser.add_argument("-start", help="Start of range", required=False)
+    parser.add_argument("-end", help="End of range", required=False)
+    parser.add_argument("-proxy", help="Use the local or proxy servers", required=True)
+    args = parser.parse_args()
+
+    number_pages = int(args.pages)
+    con = args.con
+    if args.start != "None":
+        start = int(args.start)
+    if args.end != "None":
+        end = int(args.end)
+    utils.proxy_apply = args.proxy
+
+    # Define the start and end in a range if we decide to run with proxy and scrape all data.
+    if args.start == "None" and args.end == "None":
+        if con.lower() == "yes":
+            latest_file = latest_file()
+            start = round(int(latest_file.split("-")[2].strip(".csv"))/number_pages)
+            end = round(10000000/number_pages)
+        else:
+            start = 0
+            end = round(10000000/number_pages)
+
     #     The number of pages each file should contain.
-    for i in range(start, round(10000000/number_pages)):
+    for i in range(start, end+1 ):
         devide_part(round(number_pages/30)*i, round(number_pages/30)*(i+1))
         get_view.member_urls.clear()
         utils.dftemps = pd.DataFrame()

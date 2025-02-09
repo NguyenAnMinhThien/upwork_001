@@ -1,3 +1,4 @@
+import argparse
 import time
 import os
 import pandas
@@ -11,13 +12,17 @@ import proxyscrape
 member_urls = list()
 error_urls = list()
 dftemps = pandas.DataFrame()
+proxy_apply = ""
 
 
 # 54.255.135.139
 # 14.173.75.31
 
 def rotate_proxy():
-    proxy = proxy_list.proxy
+    if proxy_apply == "yes":
+        proxy = proxy_list.proxy
+    else:
+        proxy = ['']
     return random.choice(proxy)
 
 
