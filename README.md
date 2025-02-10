@@ -12,10 +12,6 @@ git clone https://github.com/NguyenAnMinhThien/upwork_001.git web_scraping
 
 cd web_scraping
 
-(go to the previous branch, because current branches I'm working on)
-
-git reset --hard fe140f35874afd28d95054d8808899b6818d830c
- 
 python -m venv venv
 
 Depend on your OS
@@ -28,6 +24,19 @@ source venv/bin/activate
 
 pip install -r requirement.txt
 
-python main.py
 
++++ To allow to scrape only some pages from the browser, it is suggested not using proxy servers. This is for speed.
 
+python main.py -pages 30 -start 0 -end 2 -proxy no
+
++++ To allow to scrape with a large number of pages, use proxy servers to mask our IP.
+
+python main.py -con no -pages 1200  -proxy yes
+
+++ To continue with the previous running
+
+python main.py -pages 30 -proxy no -con yes
+
++++ Finally, to see help from this script:
+
+python main.py -h
