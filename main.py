@@ -6,6 +6,7 @@ import os
 import datetime
 import multiprocessing
 import argparse
+from itertools import repeat
 
 
 # usage python main.py -con yes -pages 300   -proxy yes  // This is used for scrape with proxy servers list.
@@ -24,6 +25,8 @@ def latest_file():
         return latest_file.split("\\")[-1]
     else:
         return latest_file.split("/")[-1]
+
+
 def welcome():
     print("How many pages each csv contain ?")
     x = int(input("x = "))
@@ -42,9 +45,29 @@ def devide_part(start, stop):
         utils.fetch_and_parse(urls=error_urls_again)
 
     # Save result
-    utils.dftemps.to_csv(filepath, index=False)
+    utils.dftemps.to_csv(filepath)
     end = (datetime.datetime.now()) - start_time
     print(f"Time taken: {end} - Output file at: {filepath}")
+
+
+def create_repeats(start, end):
+    repeats = list()
+    # each CPU will run the devide_part 2 times.
+    for j in range(0, ((end + 1 - start) // (2 * os.cpu_count()))):
+        repeats.append([i for i in range(j * (2 * os.cpu_count()), (j + 1) * (2 * os.cpu_count()))])
+
+    final = (end + 1 - start) % (2 * os.cpu_count())
+    if final > 0 and repeats != []:
+        repeats.append([i for i in range(repeats[-1][-1] + 1, repeats[-1][-1] + final + 1)])
+    elif final > 0 and repeats == []:
+        repeats.append([i for i in range(0, final)])
+    return repeats
+
+
+def devide_part_multiprocessing(number_pages, i):
+    devide_part(round(number_pages / 30) * i, round(number_pages / 30) * (i + 1))
+    get_view.member_urls.clear()
+    utils.dftemps = pd.DataFrame()
 
 
 if __name__ == '__main__':
@@ -69,14 +92,14 @@ if __name__ == '__main__':
     if args.start == None and args.end == None:
         if con.lower() == "yes":
             latest_file = latest_file()
-            start = round(int(latest_file.split("-")[2].strip(".csv"))/number_pages)
-            end = round(10000000/number_pages)
+            start = round(int(latest_file.split("-")[2].strip(".csv")) / number_pages)
+            end = round(9889953 / number_pages) - 1
+        #     From practical calculation, end - 1 for stop before running in forever
         else:
             start = 0
-            end = round(10000000/number_pages)
+            end = round(9889953 / number_pages) - 1
 
-    #     The number of pages each file should contain.
-    for i in range(start, end+1 ):
-        devide_part(round(number_pages/30)*i, round(number_pages/30)*(i+1))
-        get_view.member_urls.clear()
-        utils.dftemps = pd.DataFrame()
+    repeats = create_repeats(start, end)
+    for my_repeat in repeats:
+        with multiprocessing.Pool() as multiprocessing_pool:
+            multiprocessing_pool.starmap(devide_part_multiprocessing, zip(repeat(number_pages), my_repeat))
