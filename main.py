@@ -51,7 +51,7 @@ def devide_part(start, stop):
         utils.fetch_and_parse(urls=error_urls_again)
 
     # Save result
-    utils.dftemps.to_csv(filepath, index=False)
+    utils.dftemps.to_csv(filepath)
     end = (datetime.datetime.now()) - start_time
     print(f"Time taken: {end} - Output file at: {filepath}")
 
