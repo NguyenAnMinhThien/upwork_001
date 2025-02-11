@@ -2,14 +2,26 @@ import time
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
+import proxyscrape
+import random
+import utils
+
+proxy_apply = utils.proxy_apply
 
 member_urls = list()
 
+def rotate_proxy():
+    if proxy_apply == "yes":
+        proxy = proxyscrape.proxy
+    else:
+        proxy = ['']
+    return random.choice(proxy)
 
 async def fetch_url(url):
     global member_urls
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
+        proxy = rotate_proxy()
+        async with session.get(url, proxy = proxy) as response:
             if response.status == 200:
                 data = await response.text()
                 soup = BeautifulSoup(data, features="html.parser")
